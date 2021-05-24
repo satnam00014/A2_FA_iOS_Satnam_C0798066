@@ -27,6 +27,9 @@ class MainTableViewController: UITableViewController {
         self.navigationItem.rightBarButtonItem = self.editButtonItem
         self.navigationItem.title = "Products"
         self.showSearchBar()
+        //Following is the Initial Data, this will delete all the data from core data
+        //Initial data will be loaded in core data
+        //Comment this if you got data or try to load you own data after closing
         Data.createInitialData()
         self.loadProducts()
     }
@@ -105,6 +108,7 @@ class MainTableViewController: UITableViewController {
         }
     }
     
+    //Function to add new product into Core data
     @IBAction func addFunction(_ sender: UIBarButtonItem) {
         let destinationView = self.storyboard?.instantiateViewController(withIdentifier: "AddProductView") as! AddProductViewController
         destinationView.mainView = self
@@ -113,7 +117,6 @@ class MainTableViewController: UITableViewController {
     
     
     // MARK: - Table view data source
-
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if isProvider{
             return providersList.count
@@ -122,7 +125,6 @@ class MainTableViewController: UITableViewController {
         }
     }
 
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "main_table_cell", for: indexPath)
         if isProvider{
