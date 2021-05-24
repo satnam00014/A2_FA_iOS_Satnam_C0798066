@@ -14,6 +14,10 @@
 		D54A2912265B745300F035E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D54A2911265B745300F035E6 /* Assets.xcassets */; };
 		D54A2915265B745300F035E6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D54A2913265B745300F035E6 /* LaunchScreen.storyboard */; };
 		D54A291E265B762C00F035E6 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54A291D265B762C00F035E6 /* MainTableViewController.swift */; };
+		D54A2924265B890800F035E6 /* ViewProductsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54A2923265B890800F035E6 /* ViewProductsTableViewController.swift */; };
+		D54A2926265B894F00F035E6 /* EditProductsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54A2925265B894F00F035E6 /* EditProductsController.swift */; };
+		D54A2928265B899000F035E6 /* AddProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54A2927265B899000F035E6 /* AddProductViewController.swift */; };
+		D54A292E265BBDD400F035E6 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54A292D265BBDD400F035E6 /* Data.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +30,10 @@
 		D54A2914265B745300F035E6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D54A2916265B745300F035E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D54A291D265B762C00F035E6 /* MainTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
+		D54A2923265B890800F035E6 /* ViewProductsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewProductsTableViewController.swift; sourceTree = "<group>"; };
+		D54A2925265B894F00F035E6 /* EditProductsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProductsController.swift; sourceTree = "<group>"; };
+		D54A2927265B899000F035E6 /* AddProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProductViewController.swift; sourceTree = "<group>"; };
+		D54A292D265BBDD400F035E6 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +66,7 @@
 		D54A2904265B745200F035E6 /* A2_FA_iOS_Satnam_C0798066 */ = {
 			isa = PBXGroup;
 			children = (
+				D54A292C265BBDB300F035E6 /* Initial Data */,
 				D54A291C265B74AB00F035E6 /* Controllers */,
 				D54A2905265B745200F035E6 /* AppDelegate.swift */,
 				D54A2907265B745200F035E6 /* SceneDelegate.swift */,
@@ -74,8 +83,19 @@
 			isa = PBXGroup;
 			children = (
 				D54A291D265B762C00F035E6 /* MainTableViewController.swift */,
+				D54A2927265B899000F035E6 /* AddProductViewController.swift */,
+				D54A2923265B890800F035E6 /* ViewProductsTableViewController.swift */,
+				D54A2925265B894F00F035E6 /* EditProductsController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		D54A292C265BBDB300F035E6 /* Initial Data */ = {
+			isa = PBXGroup;
+			children = (
+				D54A292D265BBDD400F035E6 /* Data.swift */,
+			);
+			path = "Initial Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,10 +168,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D54A2926265B894F00F035E6 /* EditProductsController.swift in Sources */,
+				D54A2928265B899000F035E6 /* AddProductViewController.swift in Sources */,
 				D54A291E265B762C00F035E6 /* MainTableViewController.swift in Sources */,
 				D54A2906265B745200F035E6 /* AppDelegate.swift in Sources */,
+				D54A2924265B890800F035E6 /* ViewProductsTableViewController.swift in Sources */,
 				D54A2910265B745200F035E6 /* A2_FA_iOS_Satnam_C0798066.xcdatamodeld in Sources */,
 				D54A2908265B745200F035E6 /* SceneDelegate.swift in Sources */,
+				D54A292E265BBDD400F035E6 /* Data.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

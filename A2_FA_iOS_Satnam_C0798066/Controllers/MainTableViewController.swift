@@ -9,10 +9,13 @@ import UIKit
 import CoreData
 
 class MainTableViewController: UITableViewController {
-   
+
+    @IBOutlet weak var productToggleButton: UIBarButtonItem!
+    @IBOutlet weak var addButton: UIBarButtonItem!
     
     private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
+    var providersList : [Provider] = [Provider]()
     var productsList : [Product] = [Product]()
     
     let searchController = UISearchController(searchResultsController: nil)
@@ -24,13 +27,56 @@ class MainTableViewController: UITableViewController {
         self.navigationItem.rightBarButtonItem = self.editButtonItem
         self.navigationItem.title = "Products"
         self.showSearchBar()
-        self.initialData()
-        self.tableView.reloadData()
+        Data.createInitialData()
+        self.loadProducts()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.loadProducts()
+        self.loadProvider()
+        self.tableView.reloadData()
+        self.navigationController?.toolbar.isHidden = false
+    }
+    
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        productToggleButton.isEnabled = !editing
+        addButton.isEnabled = !editing
+    }
+
+    @IBAction func productToggleFunction(_ sender: UIBarButtonItem) {
+        isProvider = !isProvider
+        if isProvider {
+            sender.title = "Show Products"
+            self.navigationItem.title = "Providers"
+            self.loadProvider()
+            self.tableView.reloadData()
+        }else{
+            sender.title = "Show Providers"
+            self.navigationItem.title = "Products"
+            self.loadProducts()
+            self.tableView.reloadData()
+        }
+    }
+  
     //MARK: - Load and Delete Data
+    func loadProvider(predicate : NSPredicate? = nil)  {
+        let request : NSFetchRequest<Provider> = Provider.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        if predicate != nil {
+            request.predicate = predicate
+        }
+        do {
+            self.providersList = try self.context.fetch(request)
+        } catch  {
+            print(error)
+        }
+    }
+    
     func loadProducts(predicate : NSPredicate? = nil)  {
         let request : NSFetchRequest<Product> = Product.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "productName", ascending: true)]
         if predicate != nil {
             request.predicate = predicate
         }
@@ -41,101 +87,68 @@ class MainTableViewController: UITableViewController {
         }
     }
     
-    func deleteProvider()  {
-        let request : NSFetchRequest<Provider>  = Provider.fetchRequest()
-        var providers : [Provider] = [Provider]()
-        do{
-            providers = try self.context.fetch(request)
-        }catch{
-            print(error)
-        }
-        for provider in providers{
-            do {
-                context.delete(provider)
-                try context.save()
-            } catch  {
-                print(error)
-            }
-        }
-        
-    }
-    
     func deleteProduct(product:Product) {
         do {
             context.delete(product)
             try context.save()
-            print("inside delete")
         } catch  {
             print(error)
         }
     }
-    func initialData()  {
-        loadProducts()
-        for product in productsList {
-            deleteProduct(product: product)
-        }
-        deleteProvider()
-        // following to add provider and save it
-        let provider1 = Provider(context: self.context)
-        provider1.name = "Apple"
+    
+    func deleteProvider(provider:Provider){
         do {
+            context.delete(provider)
             try context.save()
         } catch  {
             print(error)
         }
-        let provider2 = Provider(context: self.context)
-        provider2.name = "Microsoft"
-        do {
-            try context.save()
-        } catch  {
-            print(error)
-        }
-        do {
-            productsList.removeAll()
-            for i in 0...15 {
-                let product = Product(context: context)
-                if i%2 == 0 {
-                    product.provider = provider1
-                }else{
-                    product.provider = provider2
-                }
-                product.productName = "Product \(i+1)"
-                product.productDescription = "This is product with number \(i+1)"
-                product.productPrice = Double((i+1)*100)
-                product.productID = "c-\(i*2+1)"
-                productsList.append(product)
-            }
-            try context.save()
-        } catch  {
-            print(error)
-        }
+    }
+    
+    @IBAction func addFunction(_ sender: UIBarButtonItem) {
+        let destinationView = self.storyboard?.instantiateViewController(withIdentifier: "AddProductView") as! AddProductViewController
+        destinationView.mainView = self
+        self.present(destinationView, animated: true, completion: nil)
     }
     
     
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return productsList.count
+        if isProvider{
+            return providersList.count
+        }else{
+            return productsList.count
+        }
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "main_table_cell", for: indexPath)
-       
-        cell.textLabel?.text = productsList[indexPath.row].productName
-        cell.detailTextLabel?.text = "Provider:- \(productsList[indexPath.row].provider?.name ?? "")"
-        cell.imageView?.image = UIImage(systemName: "pencil")
-        
+        if isProvider{
+            cell.textLabel?.text = providersList[indexPath.row].name
+            cell.detailTextLabel?.text = "\(providersList[indexPath.row].products?.count ?? 0) - products"
+            cell.imageView?.image = UIImage(systemName: "folder")
+        }else{
+            cell.textLabel?.text = productsList[indexPath.row].productName
+            cell.detailTextLabel?.text = "Price:- $\(productsList[indexPath.row].productPrice)"
+            cell.imageView?.image = UIImage(systemName: "pencil")
+        }
         return cell
     }
     
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            let alert = UIAlertController(title: "Are you sure?", message: "Delete note", preferredStyle: .actionSheet)
+            let alert = UIAlertController(title: "Are you sure?", message: "Delete Product", preferredStyle: .actionSheet)
             let deleteButton = UIAlertAction(title: "Delete", style: .destructive, handler: { _ in
-                self.deleteProduct(product: self.productsList[indexPath.row])
-                self.loadProducts()
+                if self.isProvider {
+                    self.deleteProvider(provider: self.providersList[indexPath.row])
+                    self.loadProvider()
+                }else{
+                    self.deleteProduct(product: self.productsList[indexPath.row])
+                    self.loadProducts()
+                }
                 self.tableView.reloadData()
             })
             let cancelButton = UIAlertAction(title: "Cancel", style: .default, handler: nil)
@@ -147,15 +160,15 @@ class MainTableViewController: UITableViewController {
     
     //navigating to other controller when user click on table row
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        var detail = "\n"
-        detail += "Name : - \(productsList[indexPath.row].productName ?? "")\n"
-        detail += "ProductId : - \(productsList[indexPath.row].productID ?? "")\n"
-        detail += "Price : - \(productsList[indexPath.row].productPrice )\n"
-        detail += "Provider : - \(productsList[indexPath.row].provider?.name ?? "")\n"
-        detail += "Description : - \(productsList[indexPath.row].productDescription ?? "")\n"
-        let alert = UIAlertController(title: "Details", message: detail, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        if isProvider {
+            let destinationView = self.storyboard?.instantiateViewController(identifier: "ViewProductsView") as! ViewProductsTableViewController
+            destinationView.provider = providersList[indexPath.row]
+            self.navigationController?.pushViewController(destinationView, animated: true)
+        }else{
+            let destinationView = self.storyboard?.instantiateViewController(identifier: "EditProductView") as! EditProductsController
+            destinationView.product = productsList[indexPath.row]
+            self.navigationController?.pushViewController(destinationView, animated: true)
+        }
     }
     
 }
@@ -180,15 +193,22 @@ extension MainTableViewController: UISearchBarDelegate {
         let text:String = searchBar.text!
         if text.count == 0 {
             self.loadProducts()
+            self.loadProvider()
             self.tableView.reloadData()
         }else{
-            let predicate = NSPredicate(format: "productName CONTAINS[cd] %@", text)
-            self.loadProducts(predicate: predicate)
+            if isProvider{
+                let predicate = NSPredicate(format: "name CONTAINS[cd] %@", text)
+                self.loadProvider(predicate: predicate)
+            }else{
+                let predicate = NSPredicate(format: "productName CONTAINS[cd] %@", text)
+                self.loadProducts(predicate: predicate)
+            }
             self.tableView.reloadData()
         }
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.loadProvider()
         self.loadProducts()
         self.tableView.reloadData()
     }
